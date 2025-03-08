@@ -7,7 +7,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(43, 43, 43);
-    color: rgb(122, 122, 122);
+    color: rgb(255, 255, 255);
 }
 
 .logo{
@@ -62,7 +62,7 @@ h1 {
     }
 
 .intro-container h2 {
-    color: rgb(168, 168, 168);
+    color: rgb(172, 172, 172);
     font-size: 24px;
     margin-bottom: 10px;
 }
