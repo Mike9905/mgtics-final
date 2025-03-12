@@ -24,8 +24,8 @@
         </div>
       </nav>
 <title>Tickets</title>
-<div class="container w-50 mx-auto">
-        <h2>Bienvenid@ al sistema de tickets</h2>
+<div class="container w-50 mx-auto mt-2">
+        <h2>Solicitud de soporte tecnico</h2>
     </div>
         <div class="container w-50 mx-auto mt-4">
         <label>Nombre del emplado</label>
@@ -52,18 +52,39 @@
         <label>Descripción del problema</label>
         <textarea class="form-control" id="txtDescripcion" rows="5"></textarea>
         </div>
-        <div class="container w-50 mx-auto mt-4">
-                <label for="formFile" class="form-label">Adjuntar archivos</label>
-                <input class="form-control" type="file" id="archivoAdjunto">
+        <div class="container w-50 mx-auto mt-5 d-flex justify-content-between align-items-start">
+  
+          <!-- Sección para subir archivos -->
+          <div class="container-file">
+            <div class="folder">
+              <div class="front-side">
+                <div class="tip"></div>
+                <div class="cover"></div>
               </div>
-              <div class="container w-50 mx-auto mt-4">
-        <button class="btn btn-primary" onclick="register()">Enviar solicitud</button>
+              <div class="back-side cover"></div>
+            </div>
+            <label class="custom-file-upload">
+              <input class="title" type="file" />
+              Adjuntar archivos
+            </label>
+          </div>
+        
+          <!-- Sección para pegar imagen -->
+          <div id="imagePasteArea" class="form-control" style="height:210px; width: 60%; overflow:auto; border:2px dashed #ccc; margin-left:20px;">
+            <span style="color:#999;">Haz clic aquí y presiona Ctrl+V para pegar la imagen</span>
+          </div>
+        
         </div>
-        <div class="container w-50 mx-auto mt-4">
+        </div>
+              </div>
+              <div class="container w-50  mt-4">
+                <button class="btn"onclick="register()">Enviar solicitud</button>
+        </div>
+        <div class="container w-50 mx-center mt-4">
         <div id="list"></div>
         </div>
         </main>
-        
+  
         <script src="scripts\register.js"></script>
 
 
