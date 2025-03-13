@@ -91,7 +91,7 @@ table{
     margin: 0 auto;
     text-align: center;
     background-color: #3e6b7c;
-    font-family: 'Times New Roman', Times, serif
+    font-family: Arial, Helvetica, sans-serif
 }
 td{
     width: 100px;
@@ -104,7 +104,7 @@ td{
     padding: 20px;
     width: 25%;
     font-size: 16px;
-    color: #d3c3c3;
+    color: #fafafa;
 }
 thead{
     margin-right: 400px;
@@ -117,7 +117,7 @@ th{
     justify-content: space-between;
     text-align: center;
     word-wrap: break-word;
-    color: #d3c3c3;
+    color: #ffffff;
     padding: 20px;
     width: 25%;     
 }
@@ -206,10 +206,7 @@ tr{
     border-radius: 10px;
 }
 /* Parte frontal (Imagen) */
-.flip-front {
-    background: rgb(255, 255, 255);
-    border: 2px solid #ccc;
-}
+
 
 .flip-front img {
     width: 100%;

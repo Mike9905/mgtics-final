@@ -1,30 +1,34 @@
-//constructor
-function Ticket(nombre, tipo, nivel, descripcion, archivo){
-    this.nombre = nombre;
-    this.tipo = tipo;
-    this.nivel = nivel;
-    this.descripcion = descripcion;
-    this.archivo = archivo; // archivo ahora contendrá la URL temporal de la imagen
+// Constructor
+function Ticket(name, type, importance, description, fileName, image) {
+    this.name = name;
+    this.type = type;
+    this.importance = importance;
+    this.description = description;
+    this.fileName = fileName;
+    this.image = image;
+    this.id = Date.now(); 
 }
 
-// Consigue los inputs del html
-const inputName = document.getElementById("txtNombre");
+// Obtener inputs del HTML
+const inputName = document.getElementById("txtNombre"); 
 const inputType = document.getElementById("txtTipo");
-const inputLevel = document.getElementById("txtImportancia");
-const inputDescription= document.getElementById("txtDescripcion");
+const inputImportance = document.getElementById("txtImportancia");
+const inputDescription = document.getElementById("txtDescripcion");
+const inputFile = document.getElementById("txtFile");
+const imagePasteArea = document.getElementById("imagePasteArea");
+let pastedImageURL = ""; // Almacena la URL temporal de la imagen
 
-// Nuevo elemento para imagen pegada
-const imagePasteArea = document.getElementById('imagePasteArea');
-let pastedImageURL = ''; // Almacena la URL temporal de la imagen
+// Cargar tickets desde localStorage
+let tickets = JSON.parse(localStorage.getItem("tickets")) || [];
 
-// Evento para pegar imagen desde el portapapeles
-imagePasteArea.addEventListener('paste', function(event){
+// Funcion para pegar la imagen
+imagePasteArea.addEventListener("paste", function(event) {
     const items = event.clipboardData.items;
-    for (let i = 0; i < items.length; i++){
-        if (items[i].type.indexOf('image') !== -1){
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf("image") !== -1) {
             const blob = items[i].getAsFile();
             const reader = new FileReader();
-            reader.onload = function(evt){
+            reader.onload = function(evt) {
                 pastedImageURL = evt.target.result;
                 imagePasteArea.innerHTML = `<img src="${pastedImageURL}" style="max-width:100%; max-height:100%;"/>`;
             };
@@ -35,46 +39,60 @@ imagePasteArea.addEventListener('paste', function(event){
     }
 });
 
-function register(){
-    if(inputName.value.trim() === ""){
-        alert("Ingresa el nombre");
+function register() {
+    // Valida que si exista el nombre en su campo
+    if (inputName.value.trim() === "" || inputDescription.value.trim() === "") {
+        alert("Ingrese su nombre de empleado.");
         return;
     }
-
-    // Crear objeto Ticket, pasando la imagen pegada como URL base64
-    let newTicket = new Ticket(
-        inputName.value,
-        inputType.value,
-        inputLevel.value,
-        inputDescription.value,
-        pastedImageURL // Aquí va la imagen pegada
-    );
-
-    display(newTicket);
-
-    // Limpia formulario después de registrar (opcional pero recomendado)
-    clearForm();
+    
+    let fileName = inputFile.files.length > 0 ? inputFile.files[0].name : "No adjunto";
+    let newTicket = new Ticket(inputName.value, inputType.value, inputImportance.value, inputDescription.value, fileName, pastedImageURL);
+    
+    tickets.push(newTicket);
+    saveTickets(); // Funcion que guarda en local storage
+    display();
 }
 
-function display(ticket){
+function display() {
     const list = document.getElementById("list");
-    const p = `
-        <div class="card mt-3 p-3">
-            <p><strong>Empleado:</strong> ${ticket.nombre}</p>
-            <p><strong>Tipo:</strong> ${ticket.tipo}</p>
-            <p><strong>Nivel:</strong> ${ticket.nivel}</p>
-            <p><strong>Descripción:</strong> ${ticket.descripcion}</p>
-            ${ticket.archivo ? `<img src="${ticket.archivo}" style="max-width:300px; margin-top:10px;">` : ''}
+    list.innerHTML = ""; 
+    
+    tickets.forEach(ticket => {
+        list.innerHTML += `
+        <div class='card p-3 mb-2 text-dark' id='ticket-${ticket.id}'> <!-- Aquí se agrega text-dark -->
+            <p><strong>Nombre:</strong> ${ticket.name}</p>
+            <p><strong>Tipo:</strong> ${ticket.type}</p>
+            <p><strong>Importancia:</strong> ${ticket.importance}</p>
+            <p><strong>Descripción:</strong> ${ticket.description}</p>
+            <p><strong>Archivo adjunto:</strong> ${ticket.fileName}</p>
+            ${ticket.image ? `<img src="${ticket.image}" style="max-width:300px; margin-top:10px;">` : ''}
+            <button class='btn btn-danger btn-sm' onclick='deleteTicket(${ticket.id})'>Eliminar</button>
         </div>
     `;
-    list.innerHTML += p; // inserta en HTML
+    
+    });
+
+    if (tickets.length > 0) {
+        list.innerHTML += `<button class='btn btn-warning w-50 mt-3' onclick='deleteAllTickets()'>Eliminar todas las solicitudes</button>`;
+    }
 }
 
-function clearForm(){
-    inputName.value = "";
-    inputType.value = "Soporte";
-    inputLevel.value = "Baja";
-    inputDescription.value = "";
-    pastedImageURL = "";
-    imagePasteArea.innerHTML = `<span style="color:#999;">Haz clic aquí y presiona Ctrl+V para pegar la imagen</span>`;
+function deleteTicket(id) {
+    tickets = tickets.filter(ticket => ticket.id !== id);
+    saveTickets(); 
+    display();
 }
+
+function deleteAllTickets() {
+    tickets = [];
+    saveTickets(); 
+    display();
+}
+
+function saveTickets() {
+    localStorage.setItem("tickets", JSON.stringify(tickets));
+}
+
+
+document.addEventListener("DOMContentLoaded", display);
