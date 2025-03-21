@@ -1,4 +1,4 @@
-// Constructor
+// Constructor del Ticket
 function Ticket(name, type, importance, description, fileName, image) {
     this.name = name;
     this.type = type;
@@ -6,29 +6,31 @@ function Ticket(name, type, importance, description, fileName, image) {
     this.description = description;
     this.fileName = fileName;
     this.image = image;
-    this.id = Date.now(); 
+    this.id = Date.now();
 }
 
 // Obtener inputs del HTML
-const inputName = document.getElementById("txtNombre"); 
+const inputName = document.getElementById("txtNombre");
 const inputType = document.getElementById("txtTipo");
 const inputImportance = document.getElementById("txtImportancia");
 const inputDescription = document.getElementById("txtDescripcion");
 const inputFile = document.getElementById("txtFile");
 const imagePasteArea = document.getElementById("imagePasteArea");
-let pastedImageURL = ""; // Almacena la URL temporal de la imagen
+const ticketList = document.getElementById("list");
+
+let pastedImageURL = "";
 
 // Cargar tickets desde localStorage
 let tickets = JSON.parse(localStorage.getItem("tickets")) || [];
 
-// Funcion para pegar la imagen
-imagePasteArea.addEventListener("paste", function(event) {
+// Función para pegar una imagen en el área de pegado
+imagePasteArea.addEventListener("paste", function (event) {
     const items = event.clipboardData.items;
     for (let i = 0; i < items.length; i++) {
         if (items[i].type.indexOf("image") !== -1) {
             const blob = items[i].getAsFile();
             const reader = new FileReader();
-            reader.onload = function(evt) {
+            reader.onload = function (evt) {
                 pastedImageURL = evt.target.result;
                 imagePasteArea.innerHTML = `<img src="${pastedImageURL}" style="max-width:100%; max-height:100%;"/>`;
             };
@@ -39,60 +41,95 @@ imagePasteArea.addEventListener("paste", function(event) {
     }
 });
 
-function register() {
-    // Valida que si exista el nombre en su campo
-    if (inputName.value.trim() === "" || inputDescription.value.trim() === "") {
-        alert("Ingrese su nombre de empleado.");
-        return;
-    }
-    
-    let fileName = inputFile.files.length > 0 ? inputFile.files[0].name : "No adjunto";
-    let newTicket = new Ticket(inputName.value, inputType.value, inputImportance.value, inputDescription.value, fileName, pastedImageURL);
-    
-    tickets.push(newTicket);
-    saveTickets(); // Funcion que guarda en local storage
+// Guardar y mostrar tickets
+function saveAndDisplayTickets() {
+    localStorage.setItem("tickets", JSON.stringify(tickets));
     display();
 }
+function getImportanceColor(level) {
+    switch (level) {
+        case "Baja":
+            return "secondary";
+        case "Media":
+            return "info";
+        case "Alta":
+            return "warning";
+        case "Crítica":
+            return "danger";
+        default:
+            return "light";
+    }
+}
 
+function register() {
+    if (inputName.value.trim() === "" || inputDescription.value.trim() === "") {
+        alert("Ingrese su nombre y una descripción.");
+        return;
+    }
+
+    let fileName = inputFile.files.length > 0 ? inputFile.files[0].name : "No adjunto";
+    let newTicket = new Ticket(
+        inputName.value,
+        inputType.value,
+        inputImportance.value,
+        inputDescription.value,
+        fileName,
+        pastedImageURL
+    );
+
+    tickets.push(newTicket);
+    saveAndDisplayTickets();
+
+    // ✅ Limpiar el formulario
+    document.getElementById("registrationForm").reset();
+
+    // ✅ Limpiar imagen pegada
+    imagePasteArea.innerHTML = `<span style="color:#999;">Haz clic aquí y presiona Ctrl+V para pegar la imagen</span>`;
+    pastedImageURL = "";
+}
+
+// Función para mostrar los tickets almacenados en localStorage
 function display() {
-    const list = document.getElementById("list");
-    list.innerHTML = ""; 
-    
+    ticketList.innerHTML = "";
+
     tickets.forEach(ticket => {
-        list.innerHTML += `
-        <div class='card p-3 mb-2 text-dark' id='ticket-${ticket.id}'> <!-- Aquí se agrega text-dark -->
-            <p><strong>Nombre:</strong> ${ticket.name}</p>
-            <p><strong>Tipo:</strong> ${ticket.type}</p>
-            <p><strong>Importancia:</strong> ${ticket.importance}</p>
-            <p><strong>Descripción:</strong> ${ticket.description}</p>
-            <p><strong>Archivo adjunto:</strong> ${ticket.fileName}</p>
-            ${ticket.image ? `<img src="${ticket.image}" style="max-width:300px; margin-top:10px;">` : ''}
-            <button class='btn btn-danger btn-sm' onclick='deleteTicket(${ticket.id})'>Eliminar</button>
+        const importanceColor = getImportanceColor(ticket.importance);
+
+        ticketList.innerHTML += `
+        <div class="ticket-card">
+            <div class="ticket-body">
+                <h5 class="ticket-title">${ticket.name}</h5>
+                <div class="ticket-tags">
+                    <span class="badge type-badge">${ticket.type}</span>
+                    <span class="badge importance-badge ${importanceColor}">${ticket.importance}</span>
+                </div>
+                <p><strong>Descripción:</strong><br>${ticket.description}</p>
+                <p><strong>Archivo adjunto:</strong> ${ticket.fileName}</p>
+                ${ticket.image ? `<img src="${ticket.image}" class="ticket-image">` : ""}
+                <button class="delete-btn" onclick="deleteTicket(${ticket.id})">Eliminar</button>
+            </div>
         </div>
-    `;
-    
+        `;
     });
 
     if (tickets.length > 0) {
-        list.innerHTML += `<button class='btn btn-warning w-50 mt-3' onclick='deleteAllTickets()'>Eliminar todas las solicitudes</button>`;
+        ticketList.innerHTML += `<button class="delete-all-btn" onclick="deleteAllTickets()">Eliminar todas las solicitudes</button>`;
     }
 }
 
+
+// Función para eliminar un ticket específico
 function deleteTicket(id) {
     tickets = tickets.filter(ticket => ticket.id !== id);
-    saveTickets(); 
-    display();
+    saveAndDisplayTickets();
 }
 
+// Función para eliminar todos los tickets de la página
 function deleteAllTickets() {
     tickets = [];
-    saveTickets(); 
-    display();
+    saveAndDisplayTickets();
 }
 
-function saveTickets() {
-    localStorage.setItem("tickets", JSON.stringify(tickets));
-}
-
-
+// Cargar los tickets cuando la página se carga
 document.addEventListener("DOMContentLoaded", display);
+

@@ -25,8 +25,9 @@
       </nav>
 <title>Tickets</title>
 <div class="container w-50 mx-auto mt-2">
-        <h2>Solicitud de soporte tecnico</h2>
+        <h2>Solicitud de soporte técnico</h2>
     </div>
+    <form id="registrationForm">
         <div class="container w-50 mx-auto mt-4">
         <label>Nombre del empleado</label>
         <input class="form-control" type="text" id="txtNombre">
@@ -34,7 +35,7 @@
         <div class="container w-50 mx-auto mt-4">
             <label class="form-label">Tipo de solicitud</label>
             <select class="form-control" id="txtTipo">
-                <option value="Soporte">Soporte tecnico</option>
+                <option value="Soporte">Soporte técnico</option>
                 <option value="Equipo">Solicitud de equipo</option>
                 <option value="IA">IA</option>
             </select>
@@ -75,12 +76,13 @@
         </div>
               </div>
               <div class="container w-50  mt-4">
-                <button class="btn"onclick="register()">Enviar solicitud</button>
+                <button class="btn"onclick="registerServer()">Enviar solicitud</button>
         </div>
+      </form>
         <div class="container w-50 mx-center mt-4">
         <div id="list"></div>
         </div>
-        </main>
-        <script src="scripts/register.js"></script>
+    <script src="scripts/register.js"></script>
+    <script src="scripts/server.js"></script>
 </body>
 </html>
